@@ -12,7 +12,7 @@
 <p align="center">The make.fun API from TypeScript, typed route by route and signed with any Solana wallet.</p>
 
 <p align="center">
-  <a href="package.json"><img alt="Version 0.1.3" src="https://img.shields.io/badge/version-0.1.3-C41C83"></a>
+  <a href="https://www.npmjs.com/package/@makedotfun/sdk"><img alt="Version 0.1.4" src="https://img.shields.io/badge/version-0.1.4-C41C83"></a>
   <a href="https://www.typescriptlang.org"><img alt="Written in TypeScript" src="https://img.shields.io/badge/TypeScript-typed%20routes-C41C83?logo=typescript&logoColor=white"></a>
   <a href="#install"><img alt="Node 22.13 or later" src="https://img.shields.io/badge/node-%3E%3D22.13-191419?logo=nodedotjs&logoColor=white"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-191419"></a>
@@ -31,8 +31,8 @@ It has no dependencies. Signing uses WebCrypto, so the same code runs in Node an
 
 | | |
 |---|---|
-| Package | `@makedotfun/sdk` 0.1.3 |
-| Source | Public on GitHub at [makedotfun/makefun-sdk](https://github.com/makedotfun/makefun-sdk), installed from there (not on npm yet) |
+| Package | `@makedotfun/sdk` 0.1.4, on [npm](https://www.npmjs.com/package/@makedotfun/sdk) |
+| Source | Public on GitHub at [makedotfun/makefun-sdk](https://github.com/makedotfun/makefun-sdk), each npm version tagged there |
 | Entry points | `@makedotfun/sdk` everywhere, `@makedotfun/sdk/node` for Node helpers, `@makedotfun/sdk/kit` for `@solana/kit` signers |
 | Dependencies | None. `@solana/kit` 8.5 is an optional peer, needed only by `@makedotfun/sdk/kit` |
 | Runtimes | Node 22.13 or later and current browsers, listed under [Supported runtimes](#supported-runtimes) |
@@ -41,11 +41,18 @@ It has no dependencies. Signing uses WebCrypto, so the same code runs in Node an
 
 ## Install
 
-The SDK is open source, in the public repository
-[github.com/makedotfun/makefun-sdk](https://github.com/makedotfun/makefun-sdk). It isn't on the npm registry yet, so
-you install it straight from GitHub.
+```sh
+npm install @makedotfun/sdk
+```
 
-With npm 12 or newer:
+The package ships its built `dist/` and has no install scripts. For the `@makedotfun/sdk/kit` helpers, add
+`@solana/kit` too (`npm install @makedotfun/sdk @solana/kit`).
+
+### From source
+
+The SDK is open source, in the public repository
+[github.com/makedotfun/makefun-sdk](https://github.com/makedotfun/makefun-sdk), and every version on npm is the same
+package as the GitHub release tagged `v<version>`. You can install it straight from there too. With npm 12 or newer:
 
 ```sh
 npm install --allow-git=root github:makedotfun/makefun-sdk
@@ -58,13 +65,11 @@ put `allow-git=root` in your project's `.npmrc` once and drop the flag. With npm
 npm install github:makedotfun/makefun-sdk
 ```
 
-Each release is tagged `v<version>`, so you can pin one the same way:
+Pin a release by its tag the same way:
 
 ```sh
-npm install github:makedotfun/makefun-sdk#semver:^0.1.2
+npm install github:makedotfun/makefun-sdk#semver:^0.1.4
 ```
-
-The repository ships the built `dist/` and has no install scripts, so npm's script policy never comes into it.
 
 ### Supported runtimes
 

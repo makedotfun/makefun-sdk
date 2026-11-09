@@ -142,7 +142,14 @@ export interface LiveStandings {
 }
 
 export interface LiveJudging {
-  stage: 'grades' | 'swiss' | 'playoff' | 'checks';
+  kind: 'judge' | 'score';
+  grades_done: number;
+  grades_total: number;
+  draw_round: number | null;
+  draw_at: string | null;
+  regrades_done: number;
+  regrades_total: number;
+  stage: 'draw' | 'grades' | 'swiss' | 'playoff' | 'regrades' | 'checks';
   round: number | null;
   rounds: number;
   calls_done: number;
@@ -151,6 +158,13 @@ export interface LiveJudging {
   expected_at: string | null;
   entries: number;
   standings: LiveJudgingRow[];
+  held: LiveJudgingHold | null;
+}
+
+export interface LiveJudgingHold {
+  kind: 'review' | 'appeal' | 'other';
+  sentence: string;
+  until: string | null;
 }
 
 export interface LiveJudgingRow {

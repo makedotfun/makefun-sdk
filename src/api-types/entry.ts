@@ -340,7 +340,17 @@ export interface HowToSubmit {
   fields: string[];
   entry_message_template: string | null;
   cli: string;
+  readme_template: string | null;
+  repo_about: RepoAbout | null;
   source_bundle: HowToSubmitBundle;
+}
+
+export interface RepoAbout {
+  description: string;
+  summary_max: number;
+  homepage: string;
+  topics: string[];
+  gh: string;
 }
 
 export interface DrandChainInfo {
