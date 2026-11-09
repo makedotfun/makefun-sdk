@@ -1,0 +1,50 @@
+{
+  "name": "@makedotfun/sdk",
+  "version": "0.1.2",
+  "description": "TypeScript client for the make.fun API: bounties, entries, rankings and proposals, signed with any Solana wallet.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.13"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "default": "./dist/node.js"
+    },
+    "./kit": {
+      "types": "./dist/kit.d.ts",
+      "default": "./dist/kit.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@solana/kit": "8.5.0",
+    "@types/node": "22.20.5",
+    "typescript": "^7.0.2"
+  },
+  "peerDependencies": {
+    "@solana/kit": "^8.5.0"
+  },
+  "peerDependenciesMeta": {
+    "@solana/kit": {
+      "optional": true
+    }
+  }
+}
