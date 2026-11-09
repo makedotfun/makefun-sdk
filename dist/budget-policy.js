@@ -149,10 +149,6 @@ export function bindingResult(results) {
     return best;
 }
 const sfString = (s) => `"${s.replace(/[\\"]/g, '\\$&')}"`;
-/**
- * The response headers for a lane's results (the lane names the tier; heavy is charged beside a base
- * lane, so pass that). Adds Retry-After when a policy refused.
- */
 export function formatRateLimitHeaders(lane, results, nowMs = Date.now()) {
     const tier = laneTier(lane);
     if (tier === null)
@@ -185,10 +181,6 @@ function header(h, name) {
     }
     return null;
 }
-/**
- * A Structured Fields List of String items with parameters (RFC 9651 §4.2.1, the subset the draft
- * uses). Lenient: a malformed member is skipped, the rest kept.
- */
 export function parseSfPolicyList(value) {
     const out = [];
     let i = 0;

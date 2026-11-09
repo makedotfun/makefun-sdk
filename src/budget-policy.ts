@@ -203,10 +203,6 @@ export function bindingResult<R extends PolicyResult>(results: readonly R[]): R 
 
 const sfString = (s: string): string => `"${s.replace(/[\\"]/g, '\\$&')}"`;
 
-/**
- * The response headers for a lane's results (the lane names the tier; heavy is charged beside a base
- * lane, so pass that). Adds Retry-After when a policy refused.
- */
 export function formatRateLimitHeaders(lane: Lane, results: readonly PolicyResult[], nowMs: number = Date.now()): Record<string, string> {
   const tier = laneTier(lane);
   if (tier === null) throw new RangeError(`lane ${lane} has no tier of its own: format with the caller's base lane`);
@@ -225,7 +221,6 @@ export function formatRateLimitHeaders(lane: Lane, results: readonly PolicyResul
   return out;
 }
 
-/** A fetch `Headers` (or anything with `get`), or a plain record such as Node's IncomingHttpHeaders. */
 export type HeaderSource = { get(name: string): string | null } | { readonly [name: string]: string | readonly string[] | undefined };
 
 function header(h: HeaderSource, name: string): string | null {
@@ -244,10 +239,6 @@ export interface ParsedPolicyItem {
   readonly params: Readonly<Record<string, number | string | boolean>>;
 }
 
-/**
- * A Structured Fields List of String items with parameters (RFC 9651 §4.2.1, the subset the draft
- * uses). Lenient: a malformed member is skipped, the rest kept.
- */
 export function parseSfPolicyList(value: string): ParsedPolicyItem[] {
   const out: ParsedPolicyItem[] = [];
   let i = 0;

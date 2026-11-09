@@ -174,12 +174,7 @@ export declare function gcraAll(tats: readonly number[], nowMs: number, policies
     violated: string[];
 };
 export declare function bindingResult<R extends PolicyResult>(results: readonly R[]): R | undefined;
-/**
- * The response headers for a lane's results (the lane names the tier; heavy is charged beside a base
- * lane, so pass that). Adds Retry-After when a policy refused.
- */
 export declare function formatRateLimitHeaders(lane: Lane, results: readonly PolicyResult[], nowMs?: number): Record<string, string>;
-/** A fetch `Headers` (or anything with `get`), or a plain record such as Node's IncomingHttpHeaders. */
 export type HeaderSource = {
     get(name: string): string | null;
 } | {
@@ -189,10 +184,6 @@ export interface ParsedPolicyItem {
     readonly name: string;
     readonly params: Readonly<Record<string, number | string | boolean>>;
 }
-/**
- * A Structured Fields List of String items with parameters (RFC 9651 §4.2.1, the subset the draft
- * uses). Lenient: a malformed member is skipped, the rest kept.
- */
 export declare function parseSfPolicyList(value: string): ParsedPolicyItem[];
 export interface ParsedBudget {
     readonly policy: string | null;

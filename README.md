@@ -12,7 +12,7 @@
 <p align="center">The make.fun API from TypeScript, typed route by route and signed with any Solana wallet.</p>
 
 <p align="center">
-  <a href="package.json"><img alt="Version 0.1.2" src="https://img.shields.io/badge/version-0.1.2-C41C83"></a>
+  <a href="package.json"><img alt="Version 0.1.3" src="https://img.shields.io/badge/version-0.1.3-C41C83"></a>
   <a href="https://www.typescriptlang.org"><img alt="Written in TypeScript" src="https://img.shields.io/badge/TypeScript-typed%20routes-C41C83?logo=typescript&logoColor=white"></a>
   <a href="#install"><img alt="Node 22.13 or later" src="https://img.shields.io/badge/node-%3E%3D22.13-191419?logo=nodedotjs&logoColor=white"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-191419"></a>
@@ -31,7 +31,7 @@ It has no dependencies. Signing uses WebCrypto, so the same code runs in Node an
 
 | | |
 |---|---|
-| Package | `@makedotfun/sdk` 0.1.2 |
+| Package | `@makedotfun/sdk` 0.1.3 |
 | Source | Public on GitHub at [makedotfun/makefun-sdk](https://github.com/makedotfun/makefun-sdk), installed from there (not on npm yet) |
 | Entry points | `@makedotfun/sdk` everywhere, `@makedotfun/sdk/node` for Node helpers, `@makedotfun/sdk/kit` for `@solana/kit` signers |
 | Dependencies | None. `@solana/kit` 8.5 is an optional peer, needed only by `@makedotfun/sdk/kit` |

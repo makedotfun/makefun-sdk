@@ -141,6 +141,29 @@ export interface LiveStandings {
   leaderboard: string;
 }
 
+export interface LiveJudging {
+  stage: 'grades' | 'swiss' | 'playoff' | 'checks';
+  round: number | null;
+  rounds: number;
+  calls_done: number;
+  calls_total: number;
+  started_at: string | null;
+  expected_at: string | null;
+  entries: number;
+  standings: LiveJudgingRow[];
+}
+
+export interface LiveJudgingRow {
+  place: number;
+  submission_ids: string[];
+  handle: string | null;
+  win_rate_micro: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  prize_usd: string | null;
+}
+
 export interface LiveResponse {
   competition: { slug: string; title: string; status: CompetitionStatus; opens_at: string; deadline: string; resolved_at: string | null };
   status: LiveStatus;
@@ -150,6 +173,7 @@ export interface LiveResponse {
   commitment: LiveCommitment | null;
   frame: LiveFrame | null;
   standings: LiveStandings | null;
+  judging: LiveJudging | null;
   stream: string;
 }
 
@@ -365,6 +389,13 @@ export interface RaceRacer {
   net: string | null;
   return: string | null;
   trades: number | null;
+  error: string | null;
+  crosscheck: RaceRacerCrosscheck | null;
+}
+
+export interface RaceRacerCrosscheck {
+  verdict: 'matched' | 'diverged' | 'unscored';
+  seq: number | null;
 }
 
 export interface RacePoint {

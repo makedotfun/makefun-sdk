@@ -1,6 +1,6 @@
 {
   "name": "@makedotfun/sdk",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "TypeScript client for the make.fun API: bounties, entries, rankings and proposals, signed with any Solana wallet.",
   "private": true,
   "type": "module",

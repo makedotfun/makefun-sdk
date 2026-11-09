@@ -1,3 +1,3 @@
 // GENERATED from package.json's version: do not edit, every release regenerates it.
-export const SDK_VERSION = '0.1.2';
+export const SDK_VERSION = '0.1.3';
 //# sourceMappingURL=version.js.map
