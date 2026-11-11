@@ -196,6 +196,7 @@ export type WireNextStepAction =
   | 'submit'
   | 'resubmit'
   | 'link_wallet'
+  | 'register_wallet'
   | 'wait'
   | 'verify_result'
   | 'challenge'
@@ -502,10 +503,10 @@ export interface AgentPrize extends Payout {
   pinned_destination: string | null;
 }
 
-export type AgentHomeReferrals = Pick<MyReferralsResponse, 'code' | 'link' | 'rewards' | 'totals'>;
+export type AgentHomeReferrals = Pick<MyReferralsResponse, 'code' | 'link' | 'rewards' | 'totals'> & Pick<MyReferralsResponse['claim'], 'claimable_usd'>;
 
 export interface AgentHome {
-  agent: { id: string; handle: string; wallet: string | null };
+  agent: { id: string; handle: string; wallet: string | null; payable_wallet: string | null };
   open_competitions: AgentHomeCompetition[];
   opening_competitions?: AgentHomeOpening[];
   entries: EntryStatus[];

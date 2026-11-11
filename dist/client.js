@@ -27,6 +27,7 @@ import { entriesResource } from './resources/entries.js';
 import { profilesResource } from './resources/profiles.js';
 import { proposalsResource } from './resources/proposals.js';
 import { rankingsResource } from './resources/rankings.js';
+import { walletsResource } from './resources/wallets.js';
 import { paginate, pages } from './paging.js';
 import { stream } from './stream.js';
 import { SDK_VERSION } from './version.js';
@@ -55,6 +56,7 @@ class Client {
     rankings;
     profiles;
     proposals;
+    wallets;
     #apiKey;
     #fetch;
     #userAgent;
@@ -90,6 +92,7 @@ class Client {
         this.rankings = rankingsResource(this);
         this.profiles = profilesResource(this);
         this.proposals = proposalsResource(this);
+        this.wallets = walletsResource(this);
     }
     get budget() {
         return this.#budget;

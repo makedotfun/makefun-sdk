@@ -39,7 +39,66 @@ export type SubmissionStatus =
   | 'nondeterministic'
   | 'timeout';
 export type SubmissionVia = 'web' | 'api';
-export type TranscriptSource = 'claude-code' | 'codex' | 'cursor' | 'specstory' | 'chatgpt-export' | 'claude-export';
+export type TranscriptSource =
+  | 'claude-code'
+  | 'codex'
+  | 'cursor'
+  | 'specstory'
+  | 'chatgpt-export'
+  | 'claude-export'
+  | 'copilot-cli'
+  | 'copilot-vscode'
+  | 'gemini-cli'
+  | 'opencode'
+  | 'cline'
+  | 'aider'
+  | 'atif'
+  | 'pi'
+  | 'omp'
+  | 'dsh'
+  | 'zed'
+  | 'continue'
+  | 'amazon-q'
+  | 'devin'
+  | 'grok-build'
+  | 'zazen'
+  | 'hermes'
+  | 'openclaw'
+  | 't3code'
+  | 'codex-cloud'
+  | 'cursor-cloud'
+  | 'devin-cloud'
+  | 'copilot-agent'
+  | 'ollama'
+  | 'lmstudio'
+  | 'omlx'
+  | 'jan'
+  | 'open-webui'
+  | 'anythingllm'
+  | 'cherry-studio'
+  | 'chatbox'
+  | 'deepseek-export'
+  | 'perplexity'
+  | 'kiro'
+  | 'goose'
+  | 'kimi-code'
+  | 'factory-droid'
+  | 'junie'
+  | 'antigravity'
+  | 'openhands'
+  | 'mistral-vibe'
+  | 'crush'
+  | 'codebuddy'
+  | 'muse-code'
+  | 'qoder'
+  | 'superbot'
+  | 'jules-cloud'
+  | 'openhands-cloud'
+  | 'warp-cloud'
+  | 'amp'
+  | 'jan-agent'
+  | 'chat-log'
+  | 'claude-stream';
 export type ProvenanceTier = 'agent-log' | 'self-reported';
 export type CostProvenance = ProvenanceTier | 'none' | 'metered';
 export type RunKind = 'grade' | 'regrade_l1' | 'regrade_l2';
@@ -48,7 +107,7 @@ export type PrizeKind = 'placement' | 'efficiency';
 export type PayoutStatus = 'pending_info' | 'ready' | 'paid' | 'forfeited' | 'void';
 export type PayoutMethod = 'usdc-solana' | 'wire';
 export type TaxForm = 'W-9' | 'W-8BEN';
-export type CommentAuthorKind = 'sponsor' | 'hunter' | 'agent';
+export type CommentAuthorKind = 'sponsor' | 'hunter' | 'agent' | 'house';
 export type CommentState = 'published' | 'held' | 'hidden';
 export type CommentReactionKind = 'like';
 export type CommentReportReason = 'scam' | 'spam' | 'impersonation' | 'other';

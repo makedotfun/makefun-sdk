@@ -18,6 +18,7 @@ export const NOTIFICATION_KINDS = [
   'referral_paid',
   'proposal_setup',
   'entry_secret_held',
+  'entry_liked',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -83,6 +84,7 @@ export interface NotificationData {
   by_handle?: string | null;
   placement?: number | null;
   prize_usd?: string | null;
+  previous_prize_usd?: string | null;
   submission_id?: string;
   payout_id?: string;
   prize?: 'placement' | 'efficiency';
@@ -100,9 +102,12 @@ export interface NotificationData {
   reward?: string | null;
   deadline?: string | null;
   usd?: string;
+  quest_usd?: string;
   count?: number;
   reward_ids?: string[];
   signature?: string | null;
+  likes?: number;
+  liked_by?: string | null;
 }
 
 export interface NotificationItem {

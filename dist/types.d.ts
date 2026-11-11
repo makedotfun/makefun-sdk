@@ -17,5 +17,7 @@ export type * from './api-types/bars.js';
 export type * from './api-types/build-key.js';
 export type * from './api-types/entry-secrets.js';
 export type * from './api-types/budget.js';
+export type * from './api-types/quests.js';
+export type * from './api-types/experiments.js';
 export type { BodyOf, ParamsOf, PublicRoute, PublicRouteMaps, PublicRoutes, QueryOf, ResponseOf, SessionOnlyRoute } from './api-types/public.js';
 //# sourceMappingURL=types.d.ts.map

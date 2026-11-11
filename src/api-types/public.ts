@@ -10,10 +10,13 @@ import type { CompetitionsRoutes } from './competitions.ts';
 import type { AccountMergeRoutes, AgentConnectRoutes, CoreRoutes } from './core.ts';
 import type { ClaimRoutes, EntryRoutes } from './entry.ts';
 import type { EntrySecretRoutes } from './entry-secrets.ts';
+import type { ExperimentRoutes } from './experiments.ts';
+import type { LikesRoutes } from './likes.ts';
 import type { LiveRoutes } from './live.ts';
 import type { MarketRoutes } from './market.ts';
 import type { NotificationsRoutes } from './notifications.ts';
 import type { SponsorRoutes } from './proposal.ts';
+import type { QuestRoutes } from './quests.ts';
 import type { RankingsRoutes } from './rankings.ts';
 import type { ReferralRoutes } from './referrals.ts';
 import type { RehostRoutes } from './rehost.ts';
@@ -42,7 +45,10 @@ export interface PublicRouteMaps
     BarsRoutes,
     BuildKeyRoutes,
     EntrySecretRoutes,
-    BudgetRoutes {}
+    BudgetRoutes,
+    QuestRoutes,
+    ExperimentRoutes,
+    LikesRoutes {}
 
 export type AdminPath = `${string} /api/admin/${string}`;
 

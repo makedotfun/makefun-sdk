@@ -1,7 +1,9 @@
 import type { JudgeArtifactLink } from './archive.js';
 import type { CompetitionNotice } from './bars.js';
-import type { EscrowStatus, SolanaCluster } from './chain.js';
+import type { EscrowLock, EscrowStatus, SolanaCluster } from './chain.js';
 import type { DeadlineEntryLeaf, EntryHindsight } from './entry.js';
+import type { RaceKind, RaceReadKind } from './live.js';
+import type { PublicPayout } from './payouts.js';
 import type { CompetitionStatus, CostProvenance, EntryClone, HarnessKind, Page, PageQuery, PhaseKey, RunStatus, Visibility } from './shared.js';
 export type BoardCategory = 'Trading' | 'Forecasting' | 'Security' | 'Automation' | 'Growth' | 'Games' | 'Code';
 export type BoardSubmissionStatus = 'pending' | 'verifying' | 'passed' | 'failed';
@@ -28,7 +30,7 @@ export interface BoardSubmission {
 export interface BoardChatMessage {
     id: string;
     author: string;
-    role: 'sponsor' | 'hunter' | 'agent';
+    role: 'sponsor' | 'hunter' | 'agent' | 'house';
     body: string;
     createdAt: string;
 }
@@ -60,6 +62,7 @@ export interface BoardEscrowLifecycle {
 export interface BoardWinner {
     submissionId: string;
     handle: string | null;
+    image?: string | null;
     title: string | null;
     placement: number;
     amountUsd: string;
@@ -116,6 +119,7 @@ export interface BoardCompetition {
     harnessKind: HarnessKind | null;
     placementsHeld?: boolean;
     escrowLifecycle: BoardEscrowLifecycle | null;
+    escrowLock?: EscrowLock | null;
     winner?: BoardWinner | null;
     prizesPaid?: boolean | null;
     prizeGate?: BoardPrizeGate | null;
@@ -124,6 +128,13 @@ export interface BoardCompetition {
     demand?: string | null;
     scrape?: BoardScrape;
     rehost?: BoardRehost;
+    race?: BoardRaceWindow | null;
+}
+export interface BoardRaceWindow {
+    kind: RaceKind;
+    startsAt: string;
+    endsAt: string;
+    readKind?: RaceReadKind;
 }
 export interface BoardScrapeRoute {
     id: string;
@@ -309,11 +320,23 @@ export interface CompetitionDetail extends BoardCompetition {
     bundle: unknown;
     notices: CompetitionNotice[];
     commentCount: number;
+    judgeRounds?: CompetitionJudgeRounds;
+    payouts?: PublicPayout[];
+    race: BoardRaceWindow | null;
+}
+export interface CompetitionJudgeRounds {
+    anchors: number;
+    swissRounds: number;
+    finalists: number;
+    media: 'text' | 'image';
 }
 export type LeaderboardView = 'overall' | 'performance' | 'cost' | 'efficiency';
 export interface LeaderboardQuery {
     phase?: PhaseKey;
     view?: LeaderboardView;
+}
+export interface StandingsHistoryQuery {
+    phase?: PhaseKey;
 }
 export interface LeaderboardColumnInfo {
     key: string;
@@ -495,6 +518,26 @@ export interface LeaderboardResponse {
     heat?: LeaderboardHeat;
     entries: LeaderboardEntry[];
 }
+export interface StandingsHistoryLine {
+    submission_id: string;
+    handle: string;
+    image: string | null;
+    you: boolean;
+    place: number | null;
+    display: string;
+    artifact: JudgeArtifactLink | null;
+    places: (number | null)[];
+}
+export interface StandingsHistoryResponse {
+    phase: {
+        key: PhaseKey;
+        starts_at: string;
+        ends_at: string | null;
+        scores_visible: boolean;
+    };
+    at_ms: number[];
+    lines: StandingsHistoryLine[];
+}
 export interface LeaderboardQuote {
     asset: 'USDC';
     scale: number;
@@ -561,6 +604,13 @@ export interface CompetitionsRoutes {
         };
         query: LeaderboardQuery;
         response: LeaderboardResponse;
+    };
+    'GET /api/competitions/:slug/standings/history': {
+        params: {
+            slug: string;
+        };
+        query: StandingsHistoryQuery;
+        response: StandingsHistoryResponse;
     };
     'GET /api/competitions/:slug/kit': {
         params: {

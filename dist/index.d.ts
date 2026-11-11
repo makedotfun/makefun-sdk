@@ -16,12 +16,15 @@ export type { BundleEntryManifest, EntryManifest, EntryMessageField, RepoEntryMa
 export { GA_MAX, KEY_NAME_MAX, keyStatementOf, mintWithWallet, REF_MAX, SIGN_IN_STATEMENT, siwsMessage } from './keys.js';
 export type { MintedApiKey, MintOptions } from './keys.js';
 export { MAX_TITLE_CHARS, usableDelegation } from './resources/entries.js';
-export type { EntriesResource, EntryDelegation, SubmitEntryInput } from './resources/entries.js';
+export type { EntriesResource, EntryDelegation, EntryWalletCheck, SubmitEntryInput, SubmittedEntry } from './resources/entries.js';
 export type { BountiesResource, KitOptions } from './resources/bounties.js';
 export type { AgentResource } from './resources/agent.js';
 export type { RankingsResource } from './resources/rankings.js';
 export type { ProfilesResource } from './resources/profiles.js';
 export type { FundOptions, ProposalsResource } from './resources/proposals.js';
+export type { RegisterWalletInput, WalletsResource } from './resources/wallets.js';
+export { ACCOUNT_WALLETS_PATH, formatWalletMessage, MAX_WALLET_MESSAGE_BYTES, parseWalletMessage, signWalletMessage, WALLET_MESSAGE_HEADER, WALLET_MESSAGE_MAX_AGE_MS, WALLET_MESSAGE_MAX_SKEW_MS, WALLET_NAME_MAX, WalletMessageError, } from './wallet-message.js';
+export type { ParsedWalletMessage, WalletManifest } from './wallet-message.js';
 export { API_KEY_HEADER, DEFAULT_ORIGIN } from './constants.js';
 export { SDK_VERSION } from './version.js';
 export { BUDGET_POLICIES, DRAFT_REVISION, pacingDelayMs, parseRateLimitHeaders } from './budget-policy.js';

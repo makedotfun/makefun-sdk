@@ -13,6 +13,7 @@ export const NOTIFICATION_KINDS = [
     'referral_paid',
     'proposal_setup',
     'entry_secret_held',
+    'entry_liked',
 ];
 export const RANK_KINDS = ['ranked', 'rank_up', 'took_lead', 'overtaken', 'dethroned'];
 export const RESULT_KINDS = ['winners_selected', 'won'];

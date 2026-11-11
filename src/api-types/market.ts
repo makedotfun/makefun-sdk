@@ -5,7 +5,7 @@ export type MarketStatus = 'open' | 'closed' | 'settled' | 'void';
 
 export type MarketResponseStatus = 'pending' | MarketStatus;
 
-export type MarketClose = 'lock' | 'reveal_end' | 'draw';
+export type MarketClose = 'lock' | 'reveal_end' | 'draw' | 'race_end';
 
 export type MarketEntrants = 'barred' | 'back_self';
 
@@ -13,7 +13,7 @@ export type MarketVoidReason = 'unresolved' | 'withdrawn';
 
 export type MarketSettleWhy = 'placed_first' | 'not_awarded' | 'no_outcome' | 'frozen';
 
-export type MarketBarCheck = 'no_account' | 'admin' | 'house' | 'staff' | 'entrant' | 'linked_wallet' | 'back_self';
+export type MarketBarCheck = 'no_account' | 'house' | 'staff' | 'entrant' | 'linked_wallet' | 'back_self';
 
 export type MarketCheck =
   | MarketBarCheck
@@ -56,6 +56,7 @@ export interface MarketOutcome {
   position: number;
   other: boolean;
   handle: string | null;
+  image?: string | null;
   label: string;
   chance: string;
   frozen_at: string | null;

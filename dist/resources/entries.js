@@ -10,8 +10,17 @@
 // escrowed), and for every source bundle entry, the entry is signed: the message (./entry-message.ts, the server's
 // own format byte for byte) names the template's Domain, the bounty, the repository (or the source bundle's sha256),
 // the commit, the Transcripts (the transcript bundle's sha256) and the signer's wallet, which is the entry's payout
-// wallet and must be linked to the account. An account whose payouts an owner's wallet pinned (a payout delegation)
-// signs `make.fun entry v2` with the delegation's agent wallet, naming the payout wallet and the delegation's sha256.
+// wallet and must be on the account. An account whose payouts an owner's wallet pinned (a payout delegation) signs
+// `make.fun entry v2` with the delegation's agent wallet, naming the payout wallet and the delegation's sha256.
+//
+// Before it signs, submit makes sure the signer's wallet is on the account (client.wallets): GET /api/me/wallets, and
+// a wallet the list does not name is added first by its own signature (wallets.register, with the same signer and the
+// register block just read, so the list is read once). A refused registration is thrown as it came (a 409
+// WALLET_ON_OTHER_ACCOUNT, a 403 AGENT_SCOPE…, or an answer naming another wallet) before anything is uploaded: the
+// entry would be refused for that wallet. A site without the route (404), or a list that does not load otherwise (no
+// wallets, or no register block), is gone on from, the entry's own check then answering for the wallet. The answer's
+// walletCheck says which it was. An entry signed under a payout delegation skips it: a wallet added by its signature
+// can be paid any of the account's rewards, which the pin keeps for the payout wallet alone.
 //
 // A rehosted bounty (its template `make.fun entry v3`, naming the rehost entrant terms' sha256 on a Terms line) is
 // entered only by a caller that accepts those terms knowingly: submit refuses one without acceptTerms, or with other
@@ -19,7 +28,7 @@
 // served hash to that sha256 (rehostTermsSha256), and signs make.fun entry v3 (delegated or not) ending in that line.
 // A rehost is a patch bounty, so its entry is a source bundle, never a repository.
 import { blobSha256, EntryManifestError, rehostRepositoryRefused, rehostTermsSha256, signEntry, templateDomain, templateTerms, transcriptsSha256 } from '../entry-message.js';
-import { FeatureUnavailableError } from '../errors.js';
+import { FeatureUnavailableError, MakefunError } from '../errors.js';
 import { fileNameOf, routePath } from '../http.js';
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const COMMIT_RE = /^[0-9a-f]{40}$/;
@@ -44,6 +53,34 @@ export function usableDelegation(d, signer, competition, now) {
         throw new EntryManifestError(`the account's payout delegation ${d.sha256} covers ${d.competitions.join(', ')}, not ${competition}: have ${d.payout} sign one that does`);
     }
     return { payout: d.payout, sha256: d.sha256 };
+}
+/**
+ * The signer's wallet on the account before it signs an entry (see the header): listed, or added now; nothing done on a
+ * site without the route or when the list does not load. A refused registration is thrown as it came.
+ */
+async function walletOnAccount(client, signer, now, call) {
+    let wallets;
+    let register;
+    try {
+        ({ wallets, register } = await client.wallets.list(call));
+    }
+    catch (err) {
+        if (err instanceof MakefunError && err.status === 404)
+            return { action: 'no_route' };
+        if (err instanceof MakefunError)
+            return { action: 'unread', reason: err.message };
+        throw err;
+    }
+    if (!Array.isArray(wallets))
+        return { action: 'unread', reason: 'GET /api/me/wallets answered no wallet list' };
+    const block = register;
+    if (typeof block !== 'object' || block === null || typeof block.header !== 'string' || typeof block.domain !== 'string' || typeof block.account !== 'string') {
+        return { action: 'unread', reason: 'GET /api/me/wallets answered no register block' };
+    }
+    const listed = wallets.find((w) => w?.wallet === signer.address);
+    if (listed !== undefined)
+        return { action: 'listed', wallet: listed };
+    return { action: 'added', added: await client.wallets.register({ signer, now, register: block }, call) };
 }
 export function entriesResource(client) {
     const rehostTerms = async (options) => {
@@ -99,6 +136,7 @@ export function entriesResource(client) {
                 }
             }
             const form = new FormData();
+            let walletCheck;
             form.append('repo_url', repoUrl);
             form.append('commit_sha', commit);
             if (title !== undefined && title !== '')
@@ -111,8 +149,8 @@ export function entriesResource(client) {
                 const signer = i.signer;
                 if (signer === undefined) {
                     throw new EntryManifestError(sourceEntry
-                        ? 'a source bundle entry is always signed: pass a signer, a wallet linked to your account (it is the payout wallet)'
-                        : `${competition}'s prizes are escrowed, so its entries are signed: pass a signer, a wallet linked to your account (it is the payout wallet)`);
+                        ? 'a source bundle entry is always signed: pass a signer, the payout wallet (submit adds it to your account when it is not on it yet)'
+                        : `${competition}'s prizes are escrowed, so its entries are signed: pass a signer, the payout wallet (submit adds it to your account when it is not on it yet)`);
                 }
                 const now = i.now ?? new Date();
                 const delegation = usableDelegation(i.delegation === undefined ? client.delegation : i.delegation, signer.address, competition, now);
@@ -125,12 +163,15 @@ export function entriesResource(client) {
                         throw new EntryManifestError(`${client.origin} serves the rehost entrant terms ${served.sha256}, but ${competition}'s requirements name ${terms}: the terms changed while you entered; read them again (client.entries.rehostTerms())`);
                     }
                 }
+                if (delegation === null)
+                    walletCheck = await walletOnAccount(client, signer, now, call);
                 const entry = await signEntry({ domain: templateDomain(template, competition), competition, ...source, commit, transcripts, signer, delegation, terms, now });
                 form.append('entry_message', entry.message);
                 form.append('entry_signature', entry.signature);
             }
             const path = routePath('POST /api/competitions/:slug/submissions', { slug: competition });
-            return client.json('POST', path, { ...call, body: form });
+            const created = await client.json('POST', path, { ...call, body: form });
+            return walletCheck === undefined ? created : { ...created, walletCheck };
         },
         status: (submissionId, options) => client.request('GET /api/submissions/:id/status', { ...options, params: { id: submissionId } }),
         get: (submissionId, options) => client.request('GET /api/submissions/:id', { ...options, params: { id: submissionId } }),

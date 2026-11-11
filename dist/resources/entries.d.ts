@@ -1,3 +1,4 @@
+import type { AccountWallet, WalletRegistered } from '../api-types/community.js';
 import type { QueryOf, ResponseOf } from '../api-types/public.js';
 import type { CallOptions, MakefunClient } from '../client.js';
 import type { PageItem } from '../paging.js';
@@ -44,7 +45,10 @@ export interface SubmitEntryInput extends Omit<CallOptions, 'headers'> {
     sourceBundle?: Blob;
     /** The entry's public name (at most 200 characters); without one the site names it with two generated words. */
     title?: string;
-    /** The wallet that signs the entry message, linked to the account: required where the entry must be signed. */
+    /**
+     * The wallet that signs the entry message: required where the entry must be signed. It must be on the account, and
+     * submit adds it first when it is not (see walletCheck).
+     */
     signer?: Pick<Signer, 'address' | 'signMessage'>;
     /** The payout delegation to sign under (v2); default the client's (ClientOptions.delegation); null: none. */
     delegation?: EntryDelegation | null;
@@ -60,9 +64,35 @@ export interface SubmitEntryInput extends Omit<CallOptions, 'headers'> {
     /** The message's Issued At (default now; the server takes it for ten minutes). */
     now?: Date;
 }
+/** What submit found of its signer's wallet on the account before signing (see the header). */
+export type EntryWalletCheck = 
+/** The account's wallets name it: nothing was done. */
+{
+    action: 'listed';
+    wallet: AccountWallet;
+}
+/** It was not on the account, and was added to it now by its own signature (client.wallets.register's answer). */
+ | {
+    action: 'added';
+    added: WalletRegistered;
+}
+/** The site has no GET /api/me/wallets (404): nothing was done. */
+ | {
+    action: 'no_route';
+}
+/** The account's wallets did not load otherwise: nothing was done, and the entry was signed all the same; why. */
+ | {
+    action: 'unread';
+    reason: string;
+};
+/** submit's answer: the site's 202 answer, and what was done about the signer's wallet. */
+export type SubmittedEntry = ResponseOf<'POST /api/competitions/:slug/submissions'> & {
+    /** Set when the entry was signed without a payout delegation (see the header); absent for an unsigned or delegated entry. */
+    walletCheck?: EntryWalletCheck;
+};
 export interface EntriesResource {
     /** Enter `competition` (see the header): its 202 answer, the claim code included (store it: it is shown here once). */
-    submit(input: SubmitEntryInput): Promise<ResponseOf<'POST /api/competitions/:slug/submissions'>>;
+    submit(input: SubmitEntryInput): Promise<SubmittedEntry>;
     status(submissionId: string, options?: CallOptions): Promise<ResponseOf<'GET /api/submissions/:id/status'>>;
     get(submissionId: string, options?: CallOptions): Promise<ResponseOf<'GET /api/submissions/:id'>>;
     list(competition: string, query?: QueryOf<'GET /api/competitions/:slug/submissions'>, options?: CallOptions): Promise<ResponseOf<'GET /api/competitions/:slug/submissions'>>;

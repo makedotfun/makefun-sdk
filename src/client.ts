@@ -30,6 +30,7 @@ import { entriesResource, type EntriesResource } from './resources/entries.ts';
 import { profilesResource, type ProfilesResource } from './resources/profiles.ts';
 import { proposalsResource, type ProposalsResource } from './resources/proposals.ts';
 import { rankingsResource, type RankingsResource } from './resources/rankings.ts';
+import { walletsResource, type WalletsResource } from './resources/wallets.ts';
 import { paginate, pages, type PagedRoute, type PageItem } from './paging.ts';
 import { stream, type StreamEventOf, type StreamOptions, type StreamRoute } from './stream.ts';
 import { SDK_VERSION } from './version.ts';
@@ -136,6 +137,8 @@ export interface MakefunClient {
   readonly rankings: RankingsResource;
   readonly profiles: ProfilesResource;
   readonly proposals: ProposalsResource;
+  /** The caller's account's wallets, and one more added by its own signature. */
+  readonly wallets: WalletsResource;
 }
 
 // ---------------------------------------------------------------- the User-Agent
@@ -178,6 +181,7 @@ class Client implements MakefunClient {
   readonly rankings: RankingsResource;
   readonly profiles: ProfilesResource;
   readonly proposals: ProposalsResource;
+  readonly wallets: WalletsResource;
   readonly #apiKey: string | undefined;
   readonly #fetch: FetchLike;
   readonly #userAgent: string | null;
@@ -211,6 +215,7 @@ class Client implements MakefunClient {
     this.rankings = rankingsResource(this);
     this.profiles = profilesResource(this);
     this.proposals = proposalsResource(this);
+    this.wallets = walletsResource(this);
   }
 
   get budget(): ParsedBudget | null {

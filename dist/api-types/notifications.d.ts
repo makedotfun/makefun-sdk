@@ -1,7 +1,7 @@
 import type { ContactChannel } from './community.js';
 import type { BoardCategory } from './competitions.js';
 import type { PageQuery, PhaseKey } from './shared.js';
-export declare const NOTIFICATION_KINDS: readonly ['new_contest', 'ranked', 'rank_up', 'took_lead', 'overtaken', 'dethroned', 'contest_ended', 'winners_selected', 'won', 'prize_ready', 'referral_approved', 'referral_paid', 'proposal_setup', 'entry_secret_held'];
+export declare const NOTIFICATION_KINDS: readonly ['new_contest', 'ranked', 'rank_up', 'took_lead', 'overtaken', 'dethroned', 'contest_ended', 'winners_selected', 'won', 'prize_ready', 'referral_approved', 'referral_paid', 'proposal_setup', 'entry_secret_held', 'entry_liked'];
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 export declare const RANK_KINDS: readonly ["ranked", "rank_up", "took_lead", "overtaken", "dethroned"];
 export type RankKind = (typeof RANK_KINDS)[number];
@@ -41,6 +41,7 @@ export interface NotificationData {
     by_handle?: string | null;
     placement?: number | null;
     prize_usd?: string | null;
+    previous_prize_usd?: string | null;
     submission_id?: string;
     payout_id?: string;
     prize?: 'placement' | 'efficiency';
@@ -61,9 +62,12 @@ export interface NotificationData {
     reward?: string | null;
     deadline?: string | null;
     usd?: string;
+    quest_usd?: string;
     count?: number;
     reward_ids?: string[];
     signature?: string | null;
+    likes?: number;
+    liked_by?: string | null;
 }
 export interface NotificationItem {
     id: string;

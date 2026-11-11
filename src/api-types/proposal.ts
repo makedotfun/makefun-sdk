@@ -21,6 +21,7 @@ export interface ProposalSetup {
   ended_at: string | null;
   template: string | null;
   rules_reviewed_at?: string | null;
+  feed?: true;
 }
 
 export interface ProposalCheckResult {

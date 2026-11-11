@@ -1,11 +1,11 @@
 import type { ApiIssue, CompetitionStatus } from './shared.js';
 export type MarketStatus = 'open' | 'closed' | 'settled' | 'void';
 export type MarketResponseStatus = 'pending' | MarketStatus;
-export type MarketClose = 'lock' | 'reveal_end' | 'draw';
+export type MarketClose = 'lock' | 'reveal_end' | 'draw' | 'race_end';
 export type MarketEntrants = 'barred' | 'back_self';
 export type MarketVoidReason = 'unresolved' | 'withdrawn';
 export type MarketSettleWhy = 'placed_first' | 'not_awarded' | 'no_outcome' | 'frozen';
-export type MarketBarCheck = 'no_account' | 'admin' | 'house' | 'staff' | 'entrant' | 'linked_wallet' | 'back_self';
+export type MarketBarCheck = 'no_account' | 'house' | 'staff' | 'entrant' | 'linked_wallet' | 'back_self';
 export type MarketCheck = MarketBarCheck | 'no_market' | 'no_competition' | 'no_outcome' | 'market_closed' | 'market_settled' | 'market_void' | 'outcome_frozen' | 'bad_amount' | 'too_small' | 'insufficient_credits' | 'insufficient_shares' | 'price_moved' | 'not_an_outcome' | 'no_slot' | 'bad_close_time' | 'other_outcome' | 'stale_frame' | 'bad_frame';
 export type MarketRuleKey = 'credits' | 'outcomes' | 'pricing' | 'bars' | 'close' | 'freezes' | 'settlement' | 'void' | 'ledger';
 export interface MarketRule {
@@ -24,6 +24,7 @@ export interface MarketOutcome {
     position: number;
     other: boolean;
     handle: string | null;
+    image?: string | null;
     label: string;
     chance: string;
     frozen_at: string | null;

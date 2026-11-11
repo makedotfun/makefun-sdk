@@ -8,6 +8,7 @@ import { type EntriesResource } from './resources/entries.js';
 import { type ProfilesResource } from './resources/profiles.js';
 import { type ProposalsResource } from './resources/proposals.js';
 import { type RankingsResource } from './resources/rankings.js';
+import { type WalletsResource } from './resources/wallets.js';
 import { type PagedRoute, type PageItem } from './paging.js';
 import { type StreamEventOf, type StreamOptions, type StreamRoute } from './stream.js';
 /** The fetch the client calls: the global one by default, or any with its signature (a test's, a proxy's). */
@@ -126,6 +127,8 @@ export interface MakefunClient {
     readonly rankings: RankingsResource;
     readonly profiles: ProfilesResource;
     readonly proposals: ProposalsResource;
+    /** The caller's account's wallets, and one more added by its own signature. */
+    readonly wallets: WalletsResource;
 }
 /**
  * The User-Agent the SDK sends outside a browser: `makefun-sdk/<version>`, then the runtime on Node

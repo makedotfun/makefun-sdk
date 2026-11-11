@@ -16,7 +16,7 @@ import type {
   Visibility,
 } from './shared.ts';
 
-export type PrivatePartsClosed = 'internal' | 'removed' | 'before_deadline';
+export type PrivatePartsClosed = 'internal' | 'removed' | 'before_deadline' | 'private';
 
 export type SecretWithheld = 'withheld';
 
@@ -407,6 +407,7 @@ export interface JudgeArtifactLink {
   url: string;
   preview_url: string;
   sha256: string;
+  text?: string;
 }
 
 export interface ArchiveJudgeCall {
@@ -425,15 +426,16 @@ export interface ArchiveJudgeOpponentEntry {
 }
 
 export interface ArchiveJudgeOpponent {
-  kind: 'entry' | 'anchor';
+  kind: 'entry' | 'anchor' | 'rung';
   artifact_sha256: string;
   anchor_files: string[];
+  rung_files?: string[];
   entries: ArchiveJudgeOpponentEntry[];
   artifact: JudgeArtifactLink | null;
 }
 
 export interface ArchiveJudgeMatch {
-  stage: 'swiss' | 'playoff' | 'provisional';
+  stage: 'swiss' | 'playoff' | 'provisional' | 'adaptive' | 'calibration';
   round: number;
   opponent: ArchiveJudgeOpponent;
   points: number;
@@ -443,10 +445,11 @@ export interface ArchiveJudgeMatch {
 
 export interface ArchiveJudgeHeat {
   sha256: string;
-  stage: 'final' | 'provisional';
+  stage: 'final' | 'provisional' | 'calibration';
   verdict: 'v1' | 'v2';
   model: string;
   invalid_calls: number;
+  spare_sends?: number;
   matches: ArchiveJudgeMatch[];
 }
 
@@ -482,6 +485,7 @@ export interface ArchivePhaseScore {
   agent?: ArchiveAgentTrials;
   scrape?: ArchiveScrapeTrials;
   judge?: ArchiveJudge;
+  judging_artifact?: JudgeArtifactLink;
   capital?: ArchiveBarsCapital;
   constraints: ArchiveConstraints | null;
   cost_sensitivity: (ArchiveCostSensitivity & { base_net_pnl_lamports: string }) | null;
@@ -598,6 +602,12 @@ export interface ArchiveDownload {
   media_type: string;
 }
 
+export interface GeneratedStrategyNote {
+  text: string;
+  model: string;
+  written_at: string;
+}
+
 export interface SubmissionArchive extends EntryClone {
   id: string;
   title: string | null;
@@ -629,6 +639,7 @@ export interface SubmissionArchive extends EntryClone {
   metrics_withheld: boolean;
   cost: ArchiveCost | ArchiveCostWithheld;
   build_wall_ms?: number | null;
+  generated_strategy_note?: GeneratedStrategyNote | null;
   authorship: ArchiveAuthorship | null;
   downloads: ArchiveDownload[];
 }
@@ -745,6 +756,66 @@ export interface TranscriptSessionInfo {
   models: string[];
   atif_sha256: string | null;
   usage: TranscriptUsage | null;
+  harness: TranscriptHarness | null;
+  system_prompt_bytes: number | null;
+  parent_missing: boolean | null;
+  missing_subagents: number | null;
+}
+
+export interface TranscriptHarness {
+  name: string;
+  version: string | null;
+  extra: Record<string, string>;
+}
+
+export interface TranscriptDeclared {
+  harness: string | null;
+  harness_version: string | null;
+  model: string | null;
+  provider: string | null;
+  reasoning_effort: string | null;
+  notes: string | null;
+}
+
+export interface TranscriptClient {
+  harness: string | null;
+  markers: string[];
+  os: string;
+  node: string;
+  build: string | null;
+  ci: boolean;
+  tty: boolean;
+}
+
+export interface TranscriptCoverage {
+  sessions: number;
+  roots: number;
+  subagents: number;
+  parents_missing: number;
+  subagents_missing: number;
+  with_system_prompt: number;
+  context_files: number;
+  harnesses: { name: string; version: string | null; sessions: number }[];
+  notes: string[];
+}
+
+export type TranscriptContextKind = 'system-prompt' | 'instructions' | 'agent-definition' | 'skill' | 'command' | 'settings' | 'memory' | 'other';
+
+export interface TranscriptContextFileInfo {
+  id: string;
+  path: string;
+  kind: TranscriptContextKind;
+  scope: 'repo' | 'user' | 'explicit';
+  harness: string | null;
+  collected_by: 'explicit' | 'discovered';
+  bytes: number;
+  redactions: number;
+}
+
+export interface TranscriptContextFile extends TranscriptContextFileInfo {
+  submission_id: string;
+  text: string;
+  truncated: boolean;
 }
 
 export interface TranscriptUsage {
@@ -758,6 +829,10 @@ export interface TranscriptList extends Page<TranscriptSessionInfo> {
   submission_id: string;
   metrics_withheld: boolean;
   manifest: unknown;
+  coverage: TranscriptCoverage | null;
+  declared: TranscriptDeclared | null;
+  client: TranscriptClient | null;
+  context_files: TranscriptContextFileInfo[];
 }
 
 export interface TranscriptToolCall {
@@ -783,6 +858,7 @@ export interface TranscriptTurn {
   at: string | null;
   model: string | null;
   message_id: string | null;
+  system_prompt: boolean;
   text: string;
   reasoning: string | null;
   tool_calls: TranscriptToolCall[];
@@ -940,6 +1016,7 @@ export interface ArchiveRoutes {
   'GET /api/submissions/:id/blame/*': { params: { id: string }; response: BlameAnswer };
   'GET /api/submissions/:id/transcripts': { params: { id: string }; query: PageQuery; response: TranscriptList };
   'GET /api/submissions/:id/transcripts/:sessionId/turns': { params: { id: string; sessionId: string }; query: PageQuery; response: TranscriptTurns };
+  'GET /api/submissions/:id/transcripts/context/:fileId': { params: { id: string; fileId: string }; response: TranscriptContextFile };
   'GET /api/submissions/:id/action-log': { params: { id: string }; query: ActionLogQuery; response: ActionLogPage };
   'GET /api/compare/:a/:b': { params: { a: string; b: string }; query: CompareQuery; response: CompareResponse };
   'GET /api/search': { query: SearchQuery; response: SearchResponse };

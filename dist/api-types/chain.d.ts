@@ -79,6 +79,32 @@ export interface EscrowView {
     synced_slot: string | null;
     synced_at: string | null;
 }
+export type EscrowFundedFrom = 'reward-wallet' | 'sponsor';
+export interface EscrowLock {
+    cluster: SolanaCluster;
+    program_id: string;
+    escrow: string;
+    vault: string;
+    mint: string;
+    amount_usd: string;
+    amount_base_units: string;
+    held_base_units: string;
+    claimed_base_units: string;
+    funded_by: string;
+    funded_from: EscrowFundedFrom;
+    open_tx: string;
+    funded_at: string;
+    status: EscrowStatus;
+    challenge_window_seconds: number;
+    explorer: {
+        escrow: string;
+        open_tx: string;
+    };
+    text_view: {
+        escrow: string;
+        open_tx: string;
+    };
+}
 export interface EscrowOpenBody {
     arbiter?: string;
     refund_to?: string;

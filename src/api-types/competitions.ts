@@ -1,8 +1,10 @@
 // GENERATED from the make.fun API's competitions.ts: do not edit, every release regenerates it.
 import type { JudgeArtifactLink } from './archive.ts';
 import type { CompetitionNotice } from './bars.ts';
-import type { EscrowStatus, SolanaCluster } from './chain.ts';
+import type { EscrowLock, EscrowStatus, SolanaCluster } from './chain.ts';
 import type { DeadlineEntryLeaf, EntryHindsight } from './entry.ts';
+import type { RaceKind, RaceReadKind } from './live.ts';
+import type { PublicPayout } from './payouts.ts';
 import type { CompetitionStatus, CostProvenance, EntryClone, HarnessKind, Page, PageQuery, PhaseKey, RunStatus, Visibility } from './shared.ts';
 
 export type BoardCategory = 'Trading' | 'Forecasting' | 'Security' | 'Automation' | 'Growth' | 'Games' | 'Code';
@@ -34,7 +36,7 @@ export interface BoardSubmission {
 export interface BoardChatMessage {
   id: string;
   author: string;
-  role: 'sponsor' | 'hunter' | 'agent';
+  role: 'sponsor' | 'hunter' | 'agent' | 'house';
   body: string;
   createdAt: string;
 }
@@ -62,6 +64,7 @@ export interface BoardEscrowLifecycle {
 export interface BoardWinner {
   submissionId: string;
   handle: string | null;
+  image?: string | null;
   title: string | null;
   placement: number;
   amountUsd: string;
@@ -124,6 +127,7 @@ export interface BoardCompetition {
   harnessKind: HarnessKind | null;
   placementsHeld?: boolean;
   escrowLifecycle: BoardEscrowLifecycle | null;
+  escrowLock?: EscrowLock | null;
   winner?: BoardWinner | null;
   prizesPaid?: boolean | null;
   prizeGate?: BoardPrizeGate | null;
@@ -132,6 +136,14 @@ export interface BoardCompetition {
   demand?: string | null;
   scrape?: BoardScrape;
   rehost?: BoardRehost;
+  race?: BoardRaceWindow | null;
+}
+
+export interface BoardRaceWindow {
+  kind: RaceKind;
+  startsAt: string;
+  endsAt: string;
+  readKind?: RaceReadKind;
 }
 
 export interface BoardScrapeRoute {
@@ -276,6 +288,16 @@ export interface CompetitionDetail extends BoardCompetition {
   bundle: unknown;
   notices: CompetitionNotice[];
   commentCount: number;
+  judgeRounds?: CompetitionJudgeRounds;
+  payouts?: PublicPayout[];
+  race: BoardRaceWindow | null;
+}
+
+export interface CompetitionJudgeRounds {
+  anchors: number;
+  swissRounds: number;
+  finalists: number;
+  media: 'text' | 'image';
 }
 
 export type LeaderboardView = 'overall' | 'performance' | 'cost' | 'efficiency';
@@ -283,6 +305,10 @@ export type LeaderboardView = 'overall' | 'performance' | 'cost' | 'efficiency';
 export interface LeaderboardQuery {
   phase?: PhaseKey;
   view?: LeaderboardView;
+}
+
+export interface StandingsHistoryQuery {
+  phase?: PhaseKey;
 }
 
 export interface LeaderboardColumnInfo {
@@ -470,6 +496,23 @@ export interface LeaderboardResponse {
   entries: LeaderboardEntry[];
 }
 
+export interface StandingsHistoryLine {
+  submission_id: string;
+  handle: string;
+  image: string | null;
+  you: boolean;
+  place: number | null;
+  display: string;
+  artifact: JudgeArtifactLink | null;
+  places: (number | null)[];
+}
+
+export interface StandingsHistoryResponse {
+  phase: { key: PhaseKey; starts_at: string; ends_at: string | null; scores_visible: boolean };
+  at_ms: number[];
+  lines: StandingsHistoryLine[];
+}
+
 export interface LeaderboardQuote {
   asset: 'USDC';
   scale: number;
@@ -531,6 +574,7 @@ export interface CompetitionsRoutes {
   'GET /api/competitions': { query: BoardQuery; response: Page<BoardCompetition> };
   'GET /api/competitions/:slug': { params: { slug: string }; response: CompetitionDetail };
   'GET /api/competitions/:slug/leaderboard': { params: { slug: string }; query: LeaderboardQuery; response: LeaderboardResponse };
+  'GET /api/competitions/:slug/standings/history': { params: { slug: string }; query: StandingsHistoryQuery; response: StandingsHistoryResponse };
   'GET /api/competitions/:slug/kit': { params: { slug: string }; query: KitQuery; response: KitManifest };
   'GET /api/competitions/:slug/deadline-commitment': { params: { slug: string }; response: DeadlineCommitmentResponse };
 }

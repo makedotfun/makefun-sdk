@@ -1,12 +1,13 @@
 // GENERATED from the make.fun API's live.ts: do not edit, every release regenerates it.
+import type { JudgeArtifactLink } from './archive.ts';
 import type { LeaderboardValue } from './competitions.ts';
 import type { CompetitionStatus, PageQuery, PhaseKey, RunStatus } from './shared.ts';
 
 export type LiveEntryStatus = 'ranked' | 'unranked' | 'did_not_finish';
 
 export interface LiveUnit {
-  name: 'lamports' | 'quote_units';
-  asset: 'SOL' | 'USDC';
+  name: 'lamports' | 'quote_units' | 'accuracy';
+  asset: 'SOL' | 'USDC' | '%';
   decimals: number;
 }
 
@@ -26,6 +27,7 @@ export interface LiveRow {
   submission_id: string;
   run_id: string;
   handle: string;
+  image?: string | null;
   title: string | null;
   received_at: string;
   baseline: boolean;
@@ -41,13 +43,15 @@ export interface LiveRow {
   fills: number | null;
   last_fill: LiveFill | null;
   exact: boolean | null;
+  prize_rank?: number | null;
+  prize_usd?: string | null;
 }
 
 export interface LiveFrame {
   frame: number;
   last_frame: number;
   final: boolean;
-  ranked_by: 'equity' | 'placement';
+  ranked_by: 'equity' | 'placement' | 'accuracy';
   t_ms: number;
   at_ms: number;
   next_at_ms: number | null;
@@ -59,6 +63,7 @@ export interface LiveFrame {
   unit: LiveUnit | null;
   rows: LiveRow[];
   footnote: string;
+  read_kind?: RaceReadKind;
 }
 
 export type LivePhaseKey = 'upcoming' | 'submission' | 'grading' | 'running' | 'results' | 'resolved';
@@ -145,19 +150,26 @@ export interface LiveJudging {
   kind: 'judge' | 'score';
   grades_done: number;
   grades_total: number;
+  grade_trials_done?: number;
+  grade_trials_total?: number;
   draw_round: number | null;
   draw_at: string | null;
+  data_at?: string | null;
   regrades_done: number;
   regrades_total: number;
-  stage: 'draw' | 'grades' | 'swiss' | 'playoff' | 'regrades' | 'checks';
+  stage: 'data' | 'draw' | 'grades' | 'swiss' | 'playoff' | 'regrades' | 'checks';
   round: number | null;
   rounds: number;
   calls_done: number;
   calls_total: number;
+  batch_done?: number;
+  batch_total?: number;
   started_at: string | null;
   expected_at: string | null;
   entries: number;
   standings: LiveJudgingRow[];
+  now?: LiveJudgingMatch;
+  matches?: LiveJudgingMatch[];
   held: LiveJudgingHold | null;
 }
 
@@ -176,6 +188,24 @@ export interface LiveJudgingRow {
   losses: number;
   draws: number;
   prize_usd: string | null;
+  holds_place?: true;
+  artifact?: JudgeArtifactLink;
+}
+
+export interface LiveJudgingSide {
+  submission_ids: string[];
+  handle: string | null;
+  holds_place?: true;
+  artifact?: JudgeArtifactLink;
+}
+
+export interface LiveJudgingMatch {
+  stage: 'swiss' | 'playoff';
+  round: number | null;
+  a: LiveJudgingSide;
+  b: LiveJudgingSide;
+  winner: 'a' | 'b' | 'draw' | null;
+  at: string | null;
 }
 
 export interface LiveResponse {
@@ -240,6 +270,7 @@ export type RevealAggregation = 'sum' | 'mean';
 export interface RevealEntryView {
   submission_id: string;
   handle: string;
+  image?: string | null;
   title: string | null;
   baseline: boolean;
   house: boolean;
@@ -280,6 +311,7 @@ export interface RevealBoardView {
   step: number;
   rows: RevealBoardRowView[];
   decided: string | null;
+  decided_hidden?: true;
   next: RevealNextView | null;
 }
 
@@ -301,6 +333,7 @@ export interface RevealResponse {
   aside: RevealEntryView[];
   fallback: string | null;
   stream: string;
+  house_holds_places?: true;
 }
 
 export interface RevealQuery {
@@ -331,6 +364,7 @@ export interface RevealStepEvent {
   reveals: RevealStepShown[];
   finalized: RevealStepPlace[];
   decided: string | null;
+  decided_hidden?: true;
 }
 
 export interface RevealPlanEvent {
@@ -354,6 +388,10 @@ export type RevealStreamEvent =
   | { event: 'reset'; id: string; data: LiveStreamReset }
   | { event: 'evicted'; data: LiveStreamEvicted };
 
+export type RaceKind = 'bars' | 'forecast' | 'pump';
+
+export type RaceReadKind = 'session_close';
+
 export type RaceStatus = 'none' | 'scheduled' | 'racing' | 'ended' | 'official';
 
 export type RaceRacerStatus = 'staged' | 'racing' | 'timeout' | 'failed' | 'finished' | 'diverged';
@@ -361,6 +399,8 @@ export type RaceRacerStatus = 'staged' | 'racing' | 'timeout' | 'failed' | 'fini
 export type RaceTag = 'house' | 'baseline' | 'you';
 
 export type RaceInterval = '1h' | '1d' | '1m';
+
+export type RaceTicks = 'bars' | 'minutes';
 
 export interface RaceWindow {
   starts_at: string;
@@ -391,6 +431,7 @@ export interface RaceBar {
 export interface RaceRacer {
   submission_id: string;
   handle: string;
+  image?: string | null;
   title: string | null;
   received_at: string;
   tags: RaceTag[];
@@ -405,6 +446,26 @@ export interface RaceRacer {
   trades: number | null;
   error: string | null;
   crosscheck: RaceRacerCrosscheck | null;
+  forecast: RaceRacerForecast | null;
+}
+
+export interface RaceRacerForecast {
+  reads: number;
+  log_score: number;
+  hits: number;
+  agreement: number;
+  valid: boolean;
+}
+
+export interface RaceForecast {
+  places: number;
+  cadence_minutes: number;
+  reads: number;
+  reads_total: number;
+  floor_log_score: number;
+  bar: RacePoint[];
+  read_kind?: RaceReadKind;
+  reads_at?: string[];
 }
 
 export interface RaceRacerCrosscheck {
@@ -428,6 +489,7 @@ export interface RaceQuery {
 
 export interface RaceResponse {
   competition: { slug: string; title: string };
+  kind: RaceKind | null;
   phase: PhaseKey | null;
   status: RaceStatus;
   sentence: string;
@@ -436,6 +498,7 @@ export interface RaceResponse {
   window: RaceWindow | null;
   interval: RaceInterval | null;
   interval_ms: number | null;
+  ticks?: RaceTicks;
   rules: RaceRules | null;
   unit: LiveUnit | null;
   start_equity: string | null;
@@ -447,6 +510,7 @@ export interface RaceResponse {
   racers: RaceRacer[];
   series: RaceSeries[];
   frame: LiveFrame | null;
+  forecast: RaceForecast | null;
   footnote: string;
   stream: string;
   leaderboard: string;

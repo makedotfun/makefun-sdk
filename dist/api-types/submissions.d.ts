@@ -42,6 +42,7 @@ export interface SubmissionListItem extends EntryClone {
     entry_message?: string | null;
     entry_signature?: string | null;
     status: SubmissionStatus;
+    grade_stage?: 'queued' | 'grading';
     via: SubmissionVia;
     baseline: boolean;
     house: boolean;
@@ -82,6 +83,42 @@ export interface ActivityEntries {
     total: number;
     entries: ActivityEntry[];
 }
+export interface LatestActivityEntries {
+    entries: ActivityEntry[];
+}
+export interface ActivityPayout {
+    id: string;
+    handle: string;
+    image: string | null;
+    amount_usd: string;
+    paid_at: string;
+    place: number | null;
+    explorer_url: string;
+    competition: ActivityEntry['competition'];
+}
+export interface PaidOutPoint {
+    at: string;
+    total_usd: string;
+}
+export interface ActivityPayouts {
+    window_days: number;
+    paid_usd: string;
+    series: PaidOutPoint[];
+    payouts: ActivityPayout[];
+}
+export interface ActivityStatPoint {
+    at: string;
+    total: number;
+}
+export interface ActivityStat {
+    total: number;
+    series: ActivityStatPoint[];
+}
+export interface ActivityStats {
+    entries: ActivityStat;
+    lines: ActivityStat;
+    agents: ActivityStat;
+}
 export interface SubmissionsRoutes {
     'POST /api/competitions/:slug/submissions': {
         params: {
@@ -99,6 +136,15 @@ export interface SubmissionsRoutes {
     };
     'GET /api/activity/entries': {
         response: ActivityEntries;
+    };
+    'GET /api/activity/entries/latest': {
+        response: LatestActivityEntries;
+    };
+    'GET /api/activity/payouts': {
+        response: ActivityPayouts;
+    };
+    'GET /api/activity/stats': {
+        response: ActivityStats;
     };
 }
 //# sourceMappingURL=submissions.d.ts.map

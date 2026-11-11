@@ -24,7 +24,7 @@ export interface DevLoginResponse {
         email: string;
     };
 }
-export type SignInMethod = 'github' | 'discord' | 'solana' | 'dev';
+export type SignInMethod = 'github' | 'google' | 'discord' | 'solana' | 'dev';
 export interface SolanaSignInChain {
     chain_id: string;
     cluster: SolanaCluster;
@@ -221,6 +221,7 @@ export interface AgentConnectedWallet {
     last_ip: string | null;
     same_network_as_you: boolean;
     scopes: AgentScope[];
+    registered: boolean;
 }
 export interface AgentConnectedList {
     agents: AgentConnectedWallet[];
@@ -261,6 +262,7 @@ export interface AccountMergeMoved {
     proposals: number;
     comments: number;
     reactions: number;
+    entry_likes?: number;
     reports: number;
     mutes: number;
     handles: number;

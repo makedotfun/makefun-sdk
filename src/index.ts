@@ -65,12 +65,26 @@ export { GA_MAX, KEY_NAME_MAX, keyStatementOf, mintWithWallet, REF_MAX, SIGN_IN_
 export type { MintedApiKey, MintOptions } from './keys.ts';
 
 export { MAX_TITLE_CHARS, usableDelegation } from './resources/entries.ts';
-export type { EntriesResource, EntryDelegation, SubmitEntryInput } from './resources/entries.ts';
+export type { EntriesResource, EntryDelegation, EntryWalletCheck, SubmitEntryInput, SubmittedEntry } from './resources/entries.ts';
 export type { BountiesResource, KitOptions } from './resources/bounties.ts';
 export type { AgentResource } from './resources/agent.ts';
 export type { RankingsResource } from './resources/rankings.ts';
 export type { ProfilesResource } from './resources/profiles.ts';
 export type { FundOptions, ProposalsResource } from './resources/proposals.ts';
+export type { RegisterWalletInput, WalletsResource } from './resources/wallets.ts';
+export {
+  ACCOUNT_WALLETS_PATH,
+  formatWalletMessage,
+  MAX_WALLET_MESSAGE_BYTES,
+  parseWalletMessage,
+  signWalletMessage,
+  WALLET_MESSAGE_HEADER,
+  WALLET_MESSAGE_MAX_AGE_MS,
+  WALLET_MESSAGE_MAX_SKEW_MS,
+  WALLET_NAME_MAX,
+  WalletMessageError,
+} from './wallet-message.ts';
+export type { ParsedWalletMessage, WalletManifest } from './wallet-message.ts';
 
 export { API_KEY_HEADER, DEFAULT_ORIGIN } from './constants.ts';
 export { SDK_VERSION } from './version.ts';

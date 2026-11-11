@@ -18,6 +18,7 @@ import type {
   Visibility,
 } from './shared.ts';
 import type { PayoutRailRef } from './entry.ts';
+import type { PublicPayout } from './payouts.ts';
 
 export interface CommentAuthor {
   handle: string;
@@ -250,12 +251,13 @@ export const AUTO_SCREEN_CODES = [
 ] as const;
 export type AutoScreenCode = (typeof AUTO_SCREEN_CODES)[number];
 
-export type AutopayHoldAction = 'claim_again' | 'none';
+export type AutopayHoldAction = 'register_wallet' | 'claim_again' | 'none';
 
 export interface PayoutAutopayHold {
   sentence: string;
   codes: AutoScreenCode[];
   action: AutopayHoldAction;
+  fix_pays: boolean;
 }
 
 export interface ClaimBody {
@@ -283,6 +285,8 @@ export interface MeUser {
   email: string;
   image: string | null;
   github_login: string | null;
+  google: { email: string | null } | null;
+  hidden_links: ProfileLinkKind[];
   via: 'session' | 'api-key';
   avatar: AvatarView | null;
   username: UsernameState;
@@ -382,6 +386,43 @@ export interface MeResponse {
   earnings: Earnings;
 }
 
+export interface AccountWallet {
+  wallet: string;
+  kind: 'linked' | 'registered' | 'agent';
+  signs_in: boolean;
+  sign_in_id: string | null;
+  paid: 'any' | 'own_entries';
+  name: string | null;
+  primary: boolean;
+  added_at: string | null;
+}
+
+export interface AccountWalletList {
+  wallets: AccountWallet[];
+  register: {
+    path: '/api/me/wallets';
+    header: 'make.fun wallet v1';
+    domain: string;
+    account: string;
+    max_age_seconds: number;
+  };
+}
+
+export interface WalletRegisterRequest {
+  message: string;
+  signature: string;
+  name?: string;
+}
+
+export interface WalletRegistered {
+  wallet: AccountWallet;
+  already: boolean;
+}
+
+export interface WalletRegisterRefusalData {
+  code: 'WALLET_ON_OTHER_ACCOUNT';
+}
+
 export interface AvatarView {
   url: string;
   url_small: string;
@@ -396,10 +437,13 @@ export interface UsernameState {
   next_change_at: string | null;
 }
 
+export type ProfileLinkKind = 'github' | 'discord' | 'wallet';
+
 export interface ProfilePatchBody {
   handle?: string;
   username_step?: 'skipped';
   bio?: string | null;
+  hidden_links?: ProfileLinkKind[];
 }
 
 export interface ProfileSettings {
@@ -408,6 +452,7 @@ export interface ProfileSettings {
   profile_url: string;
   username: UsernameState;
   bio: string | null;
+  hidden_links: ProfileLinkKind[];
 }
 
 export interface AvatarUploadForm {
@@ -465,13 +510,21 @@ export interface ProfileSolution {
   title: string | null;
   competition: { slug: string; title: string; status: CompetitionStatus; deadline: string; refunded: boolean; category: string; reward_usd: string; prize_gate_waiting: boolean };
   placement: number | null;
+  prize_usd: string | null;
   score: { column: { key: string; title: string; source: string | null; precision: number }; value: string | number | null; display: string } | null;
   entered_at: string;
-  sealed: boolean;
-  archive_url: string;
-  download_url: string | null;
-  repo_url: string | null;
-  commit_sha: string | null;
+}
+
+export interface PublicProfileDiscord {
+  user_id: string;
+  username: string;
+  global_name: string | null;
+  url: string;
+}
+
+export interface PublicProfileWallet {
+  address: string;
+  explorer_url: string;
 }
 
 export interface PublicProfile {
@@ -481,12 +534,15 @@ export interface PublicProfile {
   image: string | null;
   avatar: AvatarView | null;
   github_login: string | null;
+  discord: PublicProfileDiscord | null;
+  wallet: PublicProfileWallet | null;
   house: boolean;
   demo: boolean;
   joined_at: string;
   profile_url: string;
   record: ProfileRecord;
   solutions: ProfileSolution[];
+  payouts: PublicPayout[];
 }
 
 export type StepUpChallengePath = '/api/me/step-up';
@@ -596,9 +652,18 @@ export interface DiscordLastSignIn {
   message: string;
 }
 
+export interface SiteFeaturesQuery {
+  ref?: string;
+  campaign?: string;
+  ad_campaign?: string;
+  ad_content?: string;
+}
+
 export interface SiteFeaturesResponse {
   coin_page: boolean;
   hero_featured: string[];
+  hero_lead: string[];
+  ad_lead: string[];
 }
 
 export interface CommunityRoutes {
@@ -611,7 +676,7 @@ export interface CommunityRoutes {
   'POST /api/comments/:id/links/:index/check': { params: { id: string; index: string }; response: CommentLinkCheck };
   'POST /api/submissions/:id/claim': { params: { id: string }; body: ClaimBody; response: ClaimResponse };
   'GET /api/me': { response: MeResponse };
-  'GET /api/site/features': { response: SiteFeaturesResponse };
+  'GET /api/site/features': { query: SiteFeaturesQuery; response: SiteFeaturesResponse };
   'POST /api/me/contact': { body: ContactBody; response: ContactView };
   'POST /api/me/contact/:channel/send': { params: { channel: ContactChannel }; body: ContactSendBody; response: ContactCodeSent };
   'POST /api/me/contact/:channel/confirm': { params: { channel: ContactChannel }; body: ContactConfirmBody; response: ContactView };
@@ -620,6 +685,8 @@ export interface CommunityRoutes {
   'GET /api/me/discord': { response: MeDiscord };
   'DELETE /api/me/discord': { response: UnlinkDiscordResponse };
   'POST /api/me/step-up': { body: StepUpRequest; response: StepUpChallenge };
+  'GET /api/me/wallets': { response: AccountWalletList };
+  'POST /api/me/wallets': { body: WalletRegisterRequest; response: WalletRegistered };
   'GET /api/profiles/:handle': { params: { handle: string }; response: PublicProfile };
   'PATCH /api/me/profile': { body: ProfilePatchBody; response: ProfileSettings };
   'POST /api/me/avatar': { body: AvatarUploadForm; response: AvatarResponse };

@@ -21,4 +21,6 @@ export type * from './api-types/bars.ts';
 export type * from './api-types/build-key.ts';
 export type * from './api-types/entry-secrets.ts';
 export type * from './api-types/budget.ts';
+export type * from './api-types/quests.ts';
+export type * from './api-types/experiments.ts';
 export type { BodyOf, ParamsOf, PublicRoute, PublicRouteMaps, PublicRoutes, QueryOf, ResponseOf, SessionOnlyRoute } from './api-types/public.ts';

@@ -77,6 +77,8 @@ export type McpToolName =
   | 'claim_prize'
   | 'claim_clearance'
   | 'claim_submit'
+  | 'list_wallets'
+  | 'register_wallet'
   | 'get_submission'
   | 'get_tree'
   | 'get_blame'

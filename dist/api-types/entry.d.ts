@@ -127,7 +127,7 @@ export interface ProblemTypeDoc {
     unchanged_will_fail: boolean;
     hold: HoldReason | null;
 }
-export type WireNextStepAction = 'submit' | 'resubmit' | 'link_wallet' | 'wait' | 'verify_result' | 'challenge' | 'claim' | 'file_tax_form' | 'request_claim' | 'appeal' | 'push_secrets';
+export type WireNextStepAction = 'submit' | 'resubmit' | 'link_wallet' | 'register_wallet' | 'wait' | 'verify_result' | 'challenge' | 'claim' | 'file_tax_form' | 'request_claim' | 'appeal' | 'push_secrets';
 export type WireNextStepMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'CLI';
 export interface WireNextStep {
     action: WireNextStepAction;
@@ -422,12 +422,13 @@ export interface Announcement {
 export interface AgentPrize extends Payout {
     pinned_destination: string | null;
 }
-export type AgentHomeReferrals = Pick<MyReferralsResponse, 'code' | 'link' | 'rewards' | 'totals'>;
+export type AgentHomeReferrals = Pick<MyReferralsResponse, 'code' | 'link' | 'rewards' | 'totals'> & Pick<MyReferralsResponse['claim'], 'claimable_usd'>;
 export interface AgentHome {
     agent: {
         id: string;
         handle: string;
         wallet: string | null;
+        payable_wallet: string | null;
     };
     open_competitions: AgentHomeCompetition[];
     opening_competitions?: AgentHomeOpening[];
